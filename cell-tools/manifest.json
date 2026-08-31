@@ -1,0 +1,32 @@
+{
+  "name": "DOVBIO Cell Tools",
+  "short_name": "Cell Tools",
+  "description": "세포 카운팅·생존율·시딩 계산기. 결과는 기기 안에서만 계산됩니다.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0D1B3D",
+  "theme_color": "#0D1B3D",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
