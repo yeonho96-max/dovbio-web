@@ -4,6 +4,21 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>DOVBIO · 세포 계산기</title>
+
+<!-- ===== GA4 ===== 아래 두 곳(src, config)의 측정 ID를 실제 값으로 바꾸세요 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX', {
+    /* 개인정보 원칙: 계산 입력값은 절대 전송하지 않음. 광고 신호도 끔. */
+    allow_google_signals: false,
+    allow_ad_personalization_signals: false
+  });
+</script>
+<!-- ===== /GA4 ===== -->
+
 <!-- PWA -->
 <link rel="manifest" href="manifest.json" />
 <meta name="theme-color" content="#0D1B3D" />
@@ -665,7 +680,10 @@
     LANG = l;
     document.querySelectorAll('.lang-toggle button').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.lang === l ? 'true' : 'false'); });
     applyStaticLang();
+    // 언어 전환은 '계산'이 아니므로 GA4 계산 이벤트가 중복 발생하지 않게 억제
+    window.__dovSuppressEvents = true;
     [window.__renderCount, window.__renderVia, window.__renderSeed].forEach(function(fn){ if (fn) { try { fn(); } catch(e){} } });
+    window.__dovSuppressEvents = false;
   }
 
   /* ---------------- 탭 ---------------- */
@@ -1091,10 +1109,54 @@
     const btn = document.getElementById(pair[0]);
     if (btn) btn.addEventListener('click', function () { showResults(pair[1]); });
   });
-  // 유효한 계산 결과가 있을 때만 '결과 보기' 버튼 노출
+  /* ---------------- GA4 이벤트 ----------------
+   * 원칙: 계산 "입력값"과 "결과값"은 어떤 파라미터로도 전송하지 않는다.
+   *       전송하는 것은 "어떤 계산이 완료됐는가" + 화면 언어 + 실행 모드뿐.
+   * 타이밍: 입력 중에는 매 글자마다 결과가 유효해지므로, 마지막 입력 후
+   *         1.5초 정지했을 때 1회만 전송(디바운스). 세션당 이벤트별 상한 20회.
+   */
+  (function () {
+    var timers = {}, sent = {}, CAP = 20;
+
+    function displayMode() {
+      var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
+        || window.navigator.standalone === true;
+      return standalone ? 'standalone' : 'browser';
+    }
+
+    window.__dovEvent = function (name, extra) {
+      if (typeof gtag !== 'function') return;
+      sent[name] = (sent[name] || 0) + 1;
+      if (sent[name] > CAP) return;
+      var p = { lang: (document.documentElement.lang || 'ko'), display_mode: displayMode() };
+      if (extra) for (var k in extra) p[k] = extra[k];
+      gtag('event', name, p);
+    };
+
+    window.__dovEventDebounced = function (name) {
+      clearTimeout(timers[name]);
+      timers[name] = setTimeout(function () { window.__dovEvent(name); }, 1500);
+    };
+
+    window.__dovEventCancel = function (name) { clearTimeout(timers[name]); };
+
+    /* PWA 설치 완료 (Android/Chrome 계열만 발생. iOS Safari는 이 이벤트 없음) */
+    window.addEventListener('appinstalled', function () { window.__dovEvent('pwa_installed'); });
+
+    /* 홈화면 앱(standalone)으로 실행됨 — iOS 포함 */
+    if (displayMode() === 'standalone') window.__dovEvent('standalone_launched');
+  })();
+
+  // 유효한 계산 결과가 있을 때만 '결과 보기' 버튼 노출 (+ 계산 완료 이벤트)
+  var __DOV_EVENT_BY_SEE = { 'c-see': 'cell_count_calculated', 'v-see': 'viability_calculated', 's-see': 'seeding_calculated' };
   window.__dovToggleSee = function (seeId, hasResult) {
     const btn = document.getElementById(seeId);
     if (btn) btn.hidden = !hasResult;
+    var ev = __DOV_EVENT_BY_SEE[seeId];
+    if (!ev || !window.__dovEventDebounced) return;
+    if (window.__dovSuppressEvents) return;
+    if (hasResult) window.__dovEventDebounced(ev);
+    else window.__dovEventCancel(ev);
   };
 
   /* PWA: Service Worker 등록 (오프라인 지원). 실패해도 계산기는 정상 작동. */
