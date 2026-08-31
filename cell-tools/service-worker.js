@@ -2,7 +2,7 @@
  * 전략: 필수 앱 파일은 반드시 precache, 외부 폰트는 실패해도 되는 runtime cache.
  * 폰트 캐싱 실패가 SW 설치 전체를 막지 않도록 분리한다.
  */
-const CACHE = 'dovbio-cell-tools-v1';
+const CACHE = 'dovbio-cell-tools-v2';
 
 // 필수 앱 파일 (하나라도 실패하면 설치 실패 → 반드시 존재해야 하는 것만)
 const APP_SHELL = [
