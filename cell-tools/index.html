@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>DOVBIO · 세포 계산기</title>
 
-<!-- ===== GA4 ===== 아래 두 곳(src, config)의 측정 ID를 실제 값으로 바꾸세요 -->
+<!-- ===== GA4 ===== -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y8R9QFEJX2"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -20,9 +20,9 @@
 <!-- ===== /GA4 ===== -->
 
 <!-- PWA -->
-<link rel="manifest" href="manifest.json" />
+<link rel="manifest" href="/manifest.json" />
 <meta name="theme-color" content="#0D1B3D" />
-<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Cell Tools" />
@@ -1162,7 +1162,7 @@
   /* PWA: Service Worker 등록 (오프라인 지원). 실패해도 계산기는 정상 작동. */
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('service-worker.js').catch(function () {
+      navigator.serviceWorker.register('/service-worker.js', { scope: '/' }).catch(function () {
         /* 등록 실패는 조용히 무시 — 온라인에서는 그대로 작동 */
       });
     });
