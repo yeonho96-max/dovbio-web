@@ -14,7 +14,7 @@
  *     계산기에 입력 중인 값이 사라질 수 있다. 등록만 해제하면
  *     사용자가 다음에 페이지를 열 때 최상위 워커가 자연스럽게 담당한다.
  */
-const NEW_CACHE = 'dovbio-v6';
+const NEW_CACHE = 'dovbio-v7';
 const READY_KEY = '/__sw-ready__';
 const OLD_CACHE_PREFIX = 'dovbio-cell-tools-';
 

@@ -12,7 +12,7 @@
  *     구 워커의 'dovbio-cell-tools-*'는 건드리지 않는다 — 전환이 끝날 때까지
  *     구 워커가 그 캐시로 오프라인 응답을 계속 제공해야 하기 때문이다.
  */
-const CACHE = 'dovbio-v6';
+const CACHE = 'dovbio-v7';
 const OWN_PREFIX = 'dovbio-v';
 const READY_KEY = '/__sw-ready__';
 
@@ -27,10 +27,10 @@ const REQUIRED = [
 // 있으면 좋고 실패해도 무방한 것.
 const OPTIONAL = [
   '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/icon-maskable-512.png',
-  '/apple-touch-icon.png'
+  '/icon-192.png?v=7',
+  '/icon-512.png?v=7',
+  '/icon-maskable-512.png?v=7',
+  '/apple-touch-icon.png?v=7'
 ];
 
 // 런타임 캐시 대상 (외부 폰트 CDN) — 실패해도 무방
@@ -76,7 +76,7 @@ self.addEventListener('activate', (event) => {
     await self.clients.claim();
 
     // 활성화가 끝난 뒤에 준비 표식을 남긴다.
-    // 표식이 dovbio-v6 캐시에 존재한다는 것은
+    // 표식이 dovbio-v7 캐시에 존재한다는 것은
     // "이 버전의 최상위 워커가 필수 파일을 갖추고 활성화까지 마쳤다"는 뜻이다.
     // 구 /cell-tools/ 워커는 이 표식만 보고 물러난다.
     const cache = await caches.open(CACHE);
